@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project default="release">
+
+    <property name="artifacts" value="artifacts"/>
+    <property file="${artifacts}/release.properties"/>
+
+	<taskdef resource="net/sf/antcontrib/antlib.xml" classpath="lib/ant-contrib.jar"/>
+
+    <target name="release">
+        <for list="${release.files}" param="file">
+            <sequential>
+				<scp file="${artifacts}/@{file}" todir="${release.username}:${release.password}@${server.name}:${server.path}/${release.path}" trust="true"/>
+            </sequential>
+        </for>
+    </target>
+</project>
