@@ -4,11 +4,7 @@
     <property name="artifacts" value="artifacts"/>
     <property file="${artifacts}/release.properties"/>
 
-	<taskdef resource="net/sf/antcontrib/antlib.xml">
-		<classpath>
-    		<dirset dir="lib"/>
-		</classpath>
-	</taskdef>
+	<taskdef resource="net/sf/antcontrib/antlib.xml"/>
 
     <target name="release">
 		<sshexec host="${server.name}" username="${release.username}" password="${release.password}" command="mkdir -p ${server.path}/${release.path}" trust="true"/>
