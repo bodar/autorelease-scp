@@ -14,7 +14,7 @@
                 <checksum file="${artifacts}/@{file}" algorithm="md5"/>
                 <scp file="${artifacts}/@{file}.md5" todir="${release.username}:${release.password}@${server.name}:${server.path}/${release.path}" trust="true"/>
                 <checksum file="${artifacts}/@{file}" algorithm="sha1"/>
-                <scp file="${artifacts}/@{file}" todir="${release.username}:${release.password}@${server.name}:${server.path}/${release.path}" trust="true"/>
+                <scp file="${artifacts}/@{file}.sha1" todir="${release.username}:${release.password}@${server.name}:${server.path}/${release.path}" trust="true"/>
             </sequential>
         </for>
     </target>
