@@ -3,8 +3,13 @@
 
     <property name="artifacts" value="artifacts"/>
     <property file="${artifacts}/release.properties"/>
+    <property name="optional.file" value="scp.properties"/>
+    <available property="optional.file.exists" file="${optional.file}"/>
+    <target name="-load-optional-file" if="optional.file.exists">
+        <property file="${optional.file}"/>
+    </target>
 
-	<taskdef resource="net/sf/antcontrib/antlib.xml" classpath="lib/ant-contrib.jar"/>
+    <taskdef resource="net/sf/antcontrib/antlib.xml" classpath="lib/ant-contrib.jar"/>
 
     <target name="release">
 		<sshexec host="${server.name}" username="${release.username}" password="${release.password}" command="mkdir -p ${server.path}/${release.path}" trust="true"/>
