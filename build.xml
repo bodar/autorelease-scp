@@ -4,18 +4,38 @@
     <property name="artifacts" value="artifacts"/>
     <property file="${artifacts}/release.properties"/>
 
-    <taskdef resource="net/sf/antcontrib/antlib.xml" classpath="lib/ant-contrib.jar"/>
+    <macrodef name="native.sshexec">
+        <attribute name="host"/>
+        <attribute name="command"/>
+
+        <sequential>
+            <exec executable="ssh">
+                <arg value="@{host}"/>
+                <arg line='"@{command}"'/>
+            </exec>
+        </sequential>
+    </macrodef>
+
+    <macrodef name="native.scp">
+        <attribute name="file"/>
+        <attribute name="todir"/>
+
+        <sequential>
+            <exec executable="scp">
+                <arg value="@{file}"/>
+                <arg value="@{todir}"/>
+            </exec>
+        </sequential>
+    </macrodef>
 
     <target name="release">
-	<fail unless="server.username" message="server.username must be set"/>
-	<fail unless="server.keyfile" message="server.keyfile must be set"/>
 	<fail unless="server.name" message="server.name must be set"/>
 	<fail unless="server.path" message="server.path must be set"/>
 
-	<sshexec host="${server.name}" username="${server.username}" keyfile="${server.keyfile}" command="mkdir -p ${server.path}/${release.path}" trust="true"/>
+	<native.sshexec host="${server.name}" command="mkdir -p ${server.path}/${release.path}"/>
         <for list="${release.files}" param="file">
             <sequential>
-                <scp file="${artifacts}/@{file}" todir="${release.username}:${release.password}@${server.name}:${server.path}/${release.path}" trust="true"/>
+                <native.scp file="${artifacts}/@{file}" todir="${release.username}:${release.password}@${server.name}:${server.path}/${release.path}" trust="true"/>
                 <checksum file="${artifacts}/@{file}" algorithm="md5"/>
                 <scp file="${artifacts}/@{file}.md5" todir="${release.username}:${release.password}@${server.name}:${server.path}/${release.path}" trust="true"/>
                 <checksum file="${artifacts}/@{file}" algorithm="sha1"/>
