@@ -4,12 +4,14 @@
     <property name="artifacts" value="artifacts"/>
     <property file="${artifacts}/release.properties"/>
 
+    <taskdef resource="net/sf/antcontrib/antlib.xml" classpath="lib/ant-contrib.jar"/>
+
     <macrodef name="native.sshexec">
         <attribute name="host"/>
         <attribute name="command"/>
 
         <sequential>
-            <exec executable="ssh">
+            <exec executable="ssh" failonerror="true">
                 <arg value="@{host}"/>
                 <arg line='"@{command}"'/>
             </exec>
@@ -21,7 +23,7 @@
         <attribute name="todir"/>
 
         <sequential>
-            <exec executable="scp">
+            <exec executable="scp" failonerror="true">
                 <arg value="@{file}"/>
                 <arg value="@{todir}"/>
             </exec>
@@ -29,17 +31,21 @@
     </macrodef>
 
     <target name="release">
-	<fail unless="server.name" message="server.name must be set"/>
-	<fail unless="server.path" message="server.path must be set"/>
+        <fail unless="server.name" message="server.name must be set"/>
+        <fail unless="server.path" message="server.path must be set"/>
 
-	<native.sshexec host="${server.name}" command="mkdir -p ${server.path}/${release.path}"/>
+        <native.sshexec host="${server.name}" command="mkdir -p ${server.path}/${release.path}"/>
+
         <for list="${release.files}" param="file">
             <sequential>
-                <native.scp file="${artifacts}/@{file}" todir="${release.username}:${release.password}@${server.name}:${server.path}/${release.path}"/>
+                <native.scp file="${artifacts}/@{file}"
+                            todir="${server.name}:${server.path}/${release.path}"/>
                 <checksum file="${artifacts}/@{file}" algorithm="md5"/>
-                <native.scp file="${artifacts}/@{file}.md5" todir="${release.username}:${release.password}@${server.name}:${server.path}/${release.path}"/>
+                <native.scp file="${artifacts}/@{file}.md5"
+                            todir="${server.name}:${server.path}/${release.path}"/>
                 <checksum file="${artifacts}/@{file}" algorithm="sha1"/>
-                <native.scp file="${artifacts}/@{file}.sha1" todir="${release.username}:${release.password}@${server.name}:${server.path}/${release.path}"/>
+                <native.scp file="${artifacts}/@{file}.sha1"
+                            todir="${server.name}:${server.path}/${release.path}"/>
             </sequential>
         </for>
     </target>
