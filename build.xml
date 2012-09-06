@@ -30,29 +30,28 @@
         </sequential>
     </macrodef>
 
-    <target name="release">
+				    <target name="release">
         <fail unless="server.name" message="server.name must be set"/>
         <fail unless="server.path" message="server.path must be set"/>
 
         <for list="${release.files}" param="file">
             <sequential>
-		<var name="internal.release.path" unset="true"/>
 		<if><isset property="@{file}.path"/><then> 
-			<var name="internal.release.path" value="${@{file}.path}"/>
+			<var name="@file.release.path" value="${@{file}.path}"/>
                 </then><else>
-			<var name="internal.release.path" value="${release.path}"/>
+			<var name="@file.release.path" value="${release.path}"/>
 		</else></if>
 
-	        <native.sshexec host="${server.name}" command="mkdir -p ${server.path}/${internal.release.path}"/>
+	        <native.sshexec host="${server.name}" command="mkdir -p ${server.path}/${@file.release.path}"/>
 
                 <native.scp file="${artifacts}/@{file}"
-                            todir="${server.name}:${server.path}/${internal.release.path}"/>
+                            todir="${server.name}:${server.path}/${@file.release.path}"/>
                 <checksum file="${artifacts}/@{file}" algorithm="md5"/>
                 <native.scp file="${artifacts}/@{file}.md5"
-                            todir="${server.name}:${server.path}/${internal.release.path}"/>
+                            todir="${server.name}:${server.path}/${@file.release.path}"/>
                 <checksum file="${artifacts}/@{file}" algorithm="sha1"/>
                 <native.scp file="${artifacts}/@{file}.sha1"
-                            todir="${server.name}:${server.path}/${internal.release.path}"/>
+                            todir="${server.name}:${server.path}/${@file.release.path}"/>
             </sequential>
         </for>
     </target>
