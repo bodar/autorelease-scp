@@ -36,12 +36,12 @@
 
         <for list="${release.files}" param="file">
             <sequential>
-		<condition property="internal.release.path" value="${@{file}.path}">
-			<isset property="@{file}.path"/>
-		</condition>
-		<condition property="internal.release.path" value="${release.path}">
-			<not><isset property="internal.release.path"/></not>
-		</condition>
+		<var name="internal.release.path" unset="true"/>
+		<if><isset property="@{file}.path"/><then> 
+			<var name="internal.release.path" value="${@{file}.path}"/>
+                </then><else>
+			<var name="internal.release.path" value="${release.path}"/>
+		</else></if>
 
 	        <native.sshexec host="${server.name}" command="mkdir -p ${server.path}/${internal.release.path}"/>
 
