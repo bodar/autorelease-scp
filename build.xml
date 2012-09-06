@@ -34,18 +34,25 @@
         <fail unless="server.name" message="server.name must be set"/>
         <fail unless="server.path" message="server.path must be set"/>
 
-        <native.sshexec host="${server.name}" command="mkdir -p ${server.path}/${release.path}"/>
-
         <for list="${release.files}" param="file">
             <sequential>
+		<condition property="internal.release.path" value="${@{file}.path}">
+			<isset property="@{file}.path"/>
+		</condition>
+		<condition property="internal.release.path" value="${release.path}">
+			<not><isset property="internal.release.path"/></not>
+		</condition>
+
+	        <native.sshexec host="${server.name}" command="mkdir -p ${server.path}/${internal.release.path}"/>
+
                 <native.scp file="${artifacts}/@{file}"
-                            todir="${server.name}:${server.path}/${release.path}"/>
+                            todir="${server.name}:${server.path}/${internal.release.path}"/>
                 <checksum file="${artifacts}/@{file}" algorithm="md5"/>
                 <native.scp file="${artifacts}/@{file}.md5"
-                            todir="${server.name}:${server.path}/${release.path}"/>
+                            todir="${server.name}:${server.path}/${internal.release.path}"/>
                 <checksum file="${artifacts}/@{file}" algorithm="sha1"/>
                 <native.scp file="${artifacts}/@{file}.sha1"
-                            todir="${server.name}:${server.path}/${release.path}"/>
+                            todir="${server.name}:${server.path}/${internal.release.path}"/>
             </sequential>
         </for>
     </target>
